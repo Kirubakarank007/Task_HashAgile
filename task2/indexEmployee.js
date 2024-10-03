@@ -1,5 +1,5 @@
-const { Client } = require('@elastic/elasticsearch');
-const client = new Client({ node: 'http://localhost:9200' });
+const {Client}=require('@elastic/elasticsearch')
+const client=new Client({node:'http://localhost:9200'})
 
 class EmployeeDatabase {
     async createCollection(p_collection_name) {
@@ -12,13 +12,11 @@ class EmployeeDatabase {
         console.log(`New collection (index) ${p_collection_name} created.`);
     }
     async indexData(p_collection_name, p_exclude_column) {
-        const sample_data = [
-            { EmployeeID: "E02001", Name: "John Doe", Department: "IT", Gender: "Male" },
-            { EmployeeID: "E02002", Name: "Jane Smith", Department: "HR", Gender: "Female" },
-            { EmployeeID: "E02003", Name: "Sam Brown", Department: "IT", Gender: "Male" },
-            { EmployeeID: "E02004", Name: "Lucy Black", Department: "Finance", Gender: "Female" },
-        ];
-        for (const record of sample_data) {
+        const sample_data=[{EmployeeID:"E02001",Name:"John Doe",Department:"IT",Gender:"Male"},
+            {EmployeeID:"E02002",Name:"Jane Smith",Department:"HR",Gender:"Female"},
+            {EmployeeID:"E02003",Name:"Sam Brown",Department:"IT",Gender:"Male"},
+            {EmployeeID:"E02004",Name:"Lucy Black",Department:"Finance",Gender:"Female"}]
+        for(const record of sample_data){
             const { [p_exclude_column]: excluded, ...indexed_record } = record;
             if (Object.keys(indexed_record).length === 0) {
                 console.error('No valid data to index after exclusion.');
@@ -34,8 +32,8 @@ class EmployeeDatabase {
                     index: p_collection_name,  
                     document: indexed_record 
                 });
-            } catch (error) {
-                console.error('Error indexing document:', error);
+            }catch(error){
+                // console.error('Error indexing document:', error);
             }
         }
         await client.indices.refresh({ index: p_collection_name });
@@ -56,10 +54,9 @@ class EmployeeDatabase {
                     }
                 }
             });
-            console.log('Search response:', result.body.hits.hits);
-
-            return result.body.hits.hits.map(hit => hit._source);
-        } catch (error) {
+       
+            return result.body.hits.hits.map(hit=>hit._source);
+        }catch(error){
             console.error('Error searching by column:', error);
         }
     }
@@ -98,7 +95,7 @@ class EmployeeDatabase {
                 }
             });
             return result.body.aggregations.department_count.buckets;
-        } catch (error) {
+        }catch(error){
             console.error('Error getting department facets:', error);
         }
     }
